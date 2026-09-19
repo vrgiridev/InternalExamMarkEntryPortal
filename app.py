@@ -837,23 +837,14 @@ with gr.Blocks(title=APP_TITLE) as app:
     )
 
 if __name__ == "__main__":
-    def find_free_port(start_port=7860):
-        port = start_port
-        while port < start_port + 20:
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                try:
-                    s.bind(("127.0.0.1", port))
-                    return port
-                except OSError:
-                    port += 1
-        return 0
-
-    free_port = find_free_port(7860)
+    import os
+    # Render assigns a dynamic port via environment variable; default to 7860 locally
+    port = int(os.environ.get("PORT", 7860))
+    
     app.app.mount("/uploads", StaticFiles(directory=UPLOAD_FOLDER), name="uploads")
 
     print(f"============================================================")
-    print(f"🔒 STRICTLY LOCKED TO LOCAL SYSTEM (127.0.0.1)")
-    print(f"🎓 Portal running locally at: http://127.0.0.1:{free_port}")
+    print(f"🎓 Portal running on port: {port}")
     print(f"============================================================")
 
-    app.launch(css=CSS, head=SWEETALERT_HEAD, server_name="127.0.0.1", server_port=free_port, share=False)
+    app.launch(css=CSS, head=SWEETALERT_HEAD, server_name="0.0.0.0", server_port=port, share=False)
